@@ -13,10 +13,23 @@ jobs:
 
       - name: Fetch random meme and update README
         run: |
-          MEME_JSON=$(curl -s https://meme-api.com/gimme/ProgrammerHumor)
-          MEME_URL=$(echo $MEME_JSON | jq -r '.url')
-          if [[ -z "$MEME_URL" ]]; then echo "Error: No URL from API"; exit 1; fi
-          sed -i "s|<img src=\"[^\"]*\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|<img src=\"$MEME_URL\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|" README.md
+          MEME_JSON=$(curl -s -f https://meme-api.com/gimme/ProgrammerHumor || echo "")
+          echo "MEME_JSON: $MEME_JSON"
+          if [[ -z "$MEME_JSON" ]]; then
+            echo "Error: Empty response from API"
+            exit 1
+          fi
+          if jq -e . >/dev/null 2>&1 <<<"$MEME_JSON"; then
+            MEME_URL=$(echo "$MEME_JSON" | jq -r '.url')
+            if [[ -z "$MEME_URL" ]]; then
+              echo "Error: No URL in JSON response"
+              exit 1
+            fi
+            sed -i "s|<img src=\"[^\"]*\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|<img src=\"$MEME_URL\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|" README.md
+          else
+            echo "Error: Invalid or malformed JSON in MEME_JSON"
+            exit 1
+          fi
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
           git add README.md
