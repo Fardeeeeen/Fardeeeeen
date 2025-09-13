@@ -35,8 +35,11 @@ jobs:
           git add README.md
           git commit -m "🤣 Update daily dev meme" || echo "No changes to commit"
 
-      - name: Push changes
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          git push https://x-access-token:${GH_TOKEN}@github.com/Fardeeeeen/Fardeeeeen.git HEAD:main
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          branch: meme-update-${{ github.run_id }}
+          title: "🤣 Update daily dev meme"
+          body: "Automated update of daily developer meme from r/ProgrammerHumor"
+          commit-message: "🤣 Update daily dev meme"
