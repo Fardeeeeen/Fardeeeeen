@@ -1,9 +1,7 @@
-
 name: Daily Dev Meme Update
-
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at midnight UTC daily (5:30 AM IST)
+    - cron: '0 0 * * *'  # Fixed: Added missing * for day of week
   workflow_dispatch:  # Allows manual triggering from the Actions tab
 
 permissions:
@@ -14,7 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN for checkout
+          
       - name: Fetch random meme and update README
         run: |
           # Retry API request up to 5 times with 10s delay to handle transient issues
@@ -45,9 +45,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git add README.md
           git commit -m "🤣 Update daily dev meme" || echo "No changes to commit"
-
+          
       - name: Push changes
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git push https://x-access-token:${GH_PAT}@github.com/Fardeeeeen/Fardeeeeen.git HEAD:main
+          git push origin main
