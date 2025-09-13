@@ -1,9 +1,13 @@
+
 name: Daily Dev Meme Update
 
 on:
   schedule:
     - cron: '0 0 * * *'  # Runs at midnight UTC daily (5:30 AM IST)
   workflow_dispatch:  # Allows manual triggering from the Actions tab
+
+permissions:
+  contents: write  # Grants write access to repository contents
 
 jobs:
   update-meme:
