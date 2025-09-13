@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN for checkout
+          token: ${{ secrets.GH_PAT }}  # Use your existing GH_PAT
           
       - name: Fetch random meme and update README
         run: |
@@ -47,5 +47,7 @@ jobs:
           git commit -m "🤣 Update daily dev meme" || echo "No changes to commit"
           
       - name: Push changes
-        run: |
-          git push origin main
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
