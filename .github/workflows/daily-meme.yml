@@ -48,6 +48,6 @@ jobs:
 
       - name: Push changes
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git push https://x-access-token:${GH_TOKEN}@github.com/Fardeeeeen/Fardeeeeen.git HEAD:main
+          git push https://x-access-token:${GH_PAT}@github.com/Fardeeeeen/Fardeeeeen.git HEAD:main
