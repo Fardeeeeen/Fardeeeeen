@@ -5,9 +5,6 @@ on:
     - cron: '0 0 * * *'  # Runs at midnight UTC daily (5:30 AM IST)
   workflow_dispatch:  # Allows manual triggering from the Actions tab
 
-permissions:
-  contents: write  # Grants write access to repository contents
-
 jobs:
   update-meme:
     runs-on: ubuntu-latest
@@ -26,7 +23,7 @@ jobs:
           git commit -m "🤣 Update daily dev meme" || echo "No changes to commit"
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git push https://x-access-token:${GH_TOKEN}@github.com/Fardeeeeen/Fardeeeeen.git HEAD:main
