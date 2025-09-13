@@ -2,7 +2,7 @@ name: Daily Dev Meme Update
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at midnight UTC daily
+    - cron: '0 0 * * *'  # Runs at midnight UTC daily (5:30 AM IST)
   workflow_dispatch:  # Allows manual triggering from the Actions tab
 
 jobs:
@@ -16,14 +16,15 @@ jobs:
           MEME_JSON=$(curl -s https://meme-api.com/gimme/ProgrammerHumor)
           MEME_URL=$(echo $MEME_JSON | jq -r '.url')
           sed -i "s|<img src=\"[^\"]*\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|<img src=\"$MEME_URL\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|" README.md
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
           git add README.md
           git commit -m "🤣 Update daily dev meme" || echo "No changes to commit"
-          git push
         # jq is pre-installed on ubuntu-latest
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
+          git push origin main
