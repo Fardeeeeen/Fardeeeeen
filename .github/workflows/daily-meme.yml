@@ -13,26 +13,28 @@ jobs:
 
       - name: Fetch random meme and update README
         run: |
-          # Retry API request up to 3 times with 5s delay
-          for i in {1..3}; do
-            MEME_JSON=$(curl -s -f https://meme-api.com/gimme/ProgrammerHumor) && break
-            echo "Retry $i: API request failed"
-            sleep 5
+          # Retry API request up to 5 times with 10s delay to handle Cloudflare Tunnel/transient issues
+          for i in {1..5}; do
+            MEME_JSON=$(curl -s -f -L https://meme-api.com/gimme/ProgrammerHumor) && break
+            echo "Retry $i/5: API request failed (possible Cloudflare Tunnel issue)"
+            sleep 10
           done
-          echo "MEME_JSON: $MEME_JSON"
+          echo "Final MEME_JSON response: $MEME_JSON"
           if [[ -z "$MEME_JSON" ]]; then
-            echo "Error: Empty response from API after retries"
+            echo "Error: Empty response from API after all retries (Cloudflare Tunnel may be down)"
             exit 1
           fi
           if jq -e . >/dev/null 2>&1 <<<"$MEME_JSON"; then
             MEME_URL=$(jq -r '.url' <<<"$MEME_JSON")
             if [[ -z "$MEME_URL" ]]; then
-              echo "Error: No URL in JSON response"
+              echo "Error: No 'url' field in valid JSON response"
               exit 1
             fi
+            echo "Extracted MEME_URL: $MEME_URL"
             sed -i "s|<img src=\"[^\"]*\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|<img src=\"$MEME_URL\" alt=\"Random Developer Meme\" style=\"height: 400px;\">|" README.md
+            echo "README updated successfully"
           else
-            echo "Error: Invalid or malformed JSON in MEME_JSON"
+            echo "Error: Invalid or malformed JSON in MEME_JSON (likely Cloudflare error page)"
             exit 1
           fi
           git config --global user.email "action@github.com"
