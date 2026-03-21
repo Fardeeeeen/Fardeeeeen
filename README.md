@@ -18,7 +18,7 @@
 
 
 ### 😂 Random Dev Meme
-![Random Developer Meme](https://i.redd.it/4he9ytfnufpg1.png)
+![Random Developer Meme](https://i.redd.it/5lxm6g0zrvpg1.png)
 ---
 [![](https://visitcount.itsvg.in/api?id=Fardeeeeen&icon=0&color=0)](https://visitcount.itsvg.in)
 -->
